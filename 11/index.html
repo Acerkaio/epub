@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>EPUB.js Demo</title>
+    <script src="../jquery.min.js"></script>
+    <script src="../jszip.min.js"></script>
+    <script src="../Blob.min.js"></script>
+    <script src="../deflate.min.js"></script>
+    <script src="../inflate.min.js"></script>
+    <script src="../epub.js"></script>
+
+    <link rel="stylesheet" href="../bootstrap.min.css">
+
+</head>
+<style>
+    * {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .botton_win {
+        position: fixed;
+        bottom: 0px;
+        left: 40%;
+    }
+
+    .botton_win>button {
+        width: auto;
+        height: 25px;
+        font-size: 18px;
+    }
+
+    .Aerbtn {
+        font-size: 20px;
+        width: 80px;
+        height: 80px;
+        border-radius: 100rem;
+        background-color: transparent;
+        border: 0;
+        outline: none !important;
+        transition: all .2s ease;
+    }
+
+    .Aerbtn:hover {
+        background-color: rgba(190, 194, 252, 0.7);
+    }
+
+    #prevPageBtn {
+        position: fixed;
+        left: 0;
+        top: calc(50vh - 40px);
+    }
+
+    #nextPageBtn {
+        position: fixed;
+        right: 0;
+        top: calc(50vh - 40px);
+    }
+    @keyframes blurrr {
+        0% {
+            backdrop-filter: blur(20px);
+            opacity: 0;
+        }
+    }
+
+    #setting {
+        position: fixed;
+        right: 20px;
+        bottom: calc(10vh - 40px);
+        font-size: 15px;
+    }
+
+    
+
+    #dialog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        background-color: transparent;
+        backdrop-filter: blur(20px);
+        animation: blurrr 1s;
+    }
+</style>
+
+<body>
+    <div style="width: 100%; margin: 0 auto;">
+        <div id="read" style="width: 100%; height: auto; margin: 0 auto;">
+
+        </div>
+
+
+        <button id="prevPageBtn" class="Aerbtn">
+            ←
+        </button>
+        <button id="nextPageBtn" class="Aerbtn">
+            →
+        </button>
+
+        <dialog id="dialog" style="display: none;">
+            <div style="height: 196px; width: 216px;margin: 0 auto;">
+                最慢需 2(min) 加载，请耐心等待QWQ<br>
+                <button class="btn btn-primary" id="xiaofont">字体缩小</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="btn btn-primary" id="dafont">字体加大</button>
+                <div style="width: 250px;margin: auto;padding-bottom: 10px;">
+                    背景色: <input type="color" id="backcolor" value="#ffffff" onchange="backcolor()">
+                    字体颜色: <input type="color" id="textcolor" value="#000000" onchange="backcolor()">
+                </div>
+            </div>
+        </dialog>
+        <button class="Aerbtn" id="setting">setting</button>
+    </div>
+
+
+
+    <script src="../data.js"></script>
+    <script>
+        var flag = 0;
+        $("#setting").click(function () {
+            $("#dialog").css('animation', '');
+            flag ^= 1;
+            if (flag == 1){
+                setTimeout(() => {
+                    $("#dialog").css('animation', 'blurrr .2s ease');
+                }, 1);
+                $("#dialog").css('display', 'flex');
+            }else
+                $("#dialog").css('display', 'none');
+
+        })
+        function backcolor() {
+            console.log("saadfasdf")
+
+            var zhuti = {
+                name: "123",
+                style: {
+                    body: {
+                        color: $("#textcolor").val(),
+                        background: $("#backcolor").val(),
+                    },
+                },
+            }
+            console.log(zhuti)
+
+            themes.register(zhuti.name, zhuti.style);
+
+            themes.select(zhuti.name);
+
+        }
+
+        var fontsize = 16;
+
+        var dafont = document.getElementById("dafont")
+        dafont.addEventListener("click", function () {
+            fontsize = fontsize + 1
+            themes.fontSize(fontsize + "px")
+        });
+        var xiaofont = document.getElementById("xiaofont")
+        xiaofont.addEventListener("click", function () {
+            fontsize = fontsize - 1
+            themes.fontSize(fontsize + "px")
+        });
+
+
+
+
+
+
+        var prevPageBtn = document.getElementById("prevPageBtn");
+        var nextPageBtn = document.getElementById("nextPageBtn");
+
+        prevPageBtn.addEventListener("click", function () {
+            rendition.prev();
+        });
+
+        nextPageBtn.addEventListener("click", function () {
+            rendition.next();
+
+        });
+
+        // var book = ePub("test.epub");
+
+
+        var book = ePub("https://data.acerkaio.top/"+BOOKSDATA[window.location.pathname.replace('/','').replace('/','')]);
+        // var book = ePub("12994-Shao Huo Gong.epub");
+
+        var rendition = book.renderTo("read", {
+
+        });
+
+
+
+        var themes = rendition.themes;
+
+
+        rendition.display();
+
+        book.ready.then(function () {
+            var toc = book.navigation.toc;
+            console.log(toc);
+        });
+
+
+
+    </script>
+</body>
+
+</html>
